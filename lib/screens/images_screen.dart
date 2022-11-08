@@ -60,6 +60,8 @@ class _ImagesScreenState extends State<ImagesScreen> {
           return 'Item $number';
         }).toList());
       });
+    }else{
+      throw Exception("Could not connect!")
     }
   }
 
