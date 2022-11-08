@@ -1,5 +1,3 @@
-//import 'dart:html';
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -93,10 +91,12 @@ class _ImagesScreenState extends State<ImagesScreen> {
               final item = items[index];
               return ListTile(title: Text(item));
             } else {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 32),
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
                 child: Center(
-                  child: CircularProgressIndicator(),
+                  child: hasMore
+                      ? CircularProgressIndicator()
+                      : Text("No more data to load"),
                 ),
               );
             }
