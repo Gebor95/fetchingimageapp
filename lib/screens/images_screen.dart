@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/image_model.dart';
+
 class ImagesScreen extends StatefulWidget {
   const ImagesScreen({super.key});
 
@@ -12,7 +14,7 @@ class ImagesScreen extends StatefulWidget {
 
 class _ImagesScreenState extends State<ImagesScreen> {
   final controller = ScrollController();
-  List<String> items = [];
+  List<ImageData> imagelist = [];
   bool hasMore = true;
   int page = 1;
   bool isLoading = false;
@@ -20,10 +22,10 @@ class _ImagesScreenState extends State<ImagesScreen> {
   @override
   void initState() {
     super.initState();
-    fetch();
+    getImage();
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
-        fetch();
+        getImage();
       }
     });
   }
@@ -34,12 +36,12 @@ class _ImagesScreenState extends State<ImagesScreen> {
     super.dispose();
   }
 
-  Future fetch() async {
+  Future getImage() async {
     if (isLoading) return;
     isLoading = true;
     const limit = 25;
     final url = Uri.parse(
-        "https://jsonplaceholder.typicode.com/posts?_limit=$limit&_page=$page");
+        "https://jsonplaceholder.typicode.com/photos?_limit=$limit&_page=$page");
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List newItems = jsonDecode(response.body);
@@ -52,15 +54,20 @@ class _ImagesScreenState extends State<ImagesScreen> {
           hasMore = false;
         }
 
-        items.addAll(newItems.map<String>((item) {
-          final number = item['id'];
+        // imagelist.addAll(newItems.map<ImageData>((item) {
+        //   final number = item['title'];
 
-          return 'Item $number';
-        }).toList());
+        //   return number;
+        // }).toList());
+        for (var imageindexin in newItems) {
+          ImageData messagedetails = ImageData.fromJson(imageindexin);
+          imagelist.add(messagedetails);
+        }
       });
     } else {
       throw Exception("Could not connect!");
     }
+    return imagelist;
   }
 
   Future refresh() async {
@@ -68,28 +75,32 @@ class _ImagesScreenState extends State<ImagesScreen> {
       isLoading = false;
       hasMore = true;
       page = 0;
-      items.clear();
+      imagelist.clear();
     });
 
-    fetch();
+    getImage();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fetching Images"),
+        title: const Text("Fetching Data from Internet"),
       ),
       body: RefreshIndicator(
         onRefresh: refresh,
         child: ListView.builder(
           controller: controller,
           padding: const EdgeInsets.all(8),
-          itemCount: items.length + 1,
+          itemCount: imagelist.length + 1,
           itemBuilder: (context, index) {
-            if (index < items.length) {
-              final item = items[index];
-              return ListTile(title: Text(item));
+            if (index < imagelist.length) {
+              // final item = imagelist[index];
+              return ListTile(
+                leading:
+                    Image(image: NetworkImage("${imagelist[index].myUrl}.png")),
+                title: Text(imagelist[index].myTitle),
+              );
             } else {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 32),
