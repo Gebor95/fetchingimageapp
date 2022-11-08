@@ -53,12 +53,6 @@ class _ImagesScreenState extends State<ImagesScreen> {
         if (newItems.length < limit) {
           hasMore = false;
         }
-
-        // imagelist.addAll(newItems.map<ImageData>((item) {
-        //   final number = item['title'];
-
-        //   return number;
-        // }).toList());
         for (var imageindexin in newItems) {
           ImageData messagedetails = ImageData.fromJson(imageindexin);
           imagelist.add(messagedetails);
@@ -95,11 +89,13 @@ class _ImagesScreenState extends State<ImagesScreen> {
           itemCount: imagelist.length + 1,
           itemBuilder: (context, index) {
             if (index < imagelist.length) {
-              // final item = imagelist[index];
-              return ListTile(
-                leading:
-                    Image(image: NetworkImage("${imagelist[index].myUrl}.png")),
-                title: Text(imagelist[index].myTitle),
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListTile(
+                  leading: Image(
+                      image: NetworkImage("${imagelist[index].myUrl}.png")),
+                  title: Text(imagelist[index].myTitle),
+                ),
               );
             } else {
               return Padding(
